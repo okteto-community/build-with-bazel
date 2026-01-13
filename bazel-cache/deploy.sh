@@ -1,0 +1,1 @@
+okteto preview deploy --file bazel-cache/okteto.yaml
