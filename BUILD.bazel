@@ -1,0 +1,36 @@
+load("@rules_go//go:def.bzl", "go_binary")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load", "oci_push")
+
+go_binary(
+    name = "app",
+    srcs = ["main.go"],
+    visibility = ["//visibility:public"],
+    pure = "on",
+    static = "on",
+)
+
+# Put the binary into a tar layer at /app/server inside the image
+pkg_tar(
+    name = "app_layer",
+    srcs = [":app"]
+)
+
+oci_image(
+    name = "container_image",
+    base = "@distroless_static",
+    entrypoint = ["/app"],
+    labels = {
+        "org.opencontainers.image.source": "https://github.com/okteto-community/build-with-bazel",
+    },
+    tars = [":app_layer"],
+)
+
+
+# Push with default tag (will be overridden by wrapper script)
+oci_push(
+    name = "push",
+    image = ":container_image",
+    repository = "ttl.sh/okteto-community/build-with-bazel/hello-world",
+    remote_tags = ["latest"],
+)

@@ -1,0 +1,5 @@
+services:
+  hello-world:
+    image: $HELLO_WORLD_IMAGE
+    ports:
+    - 8080:8080

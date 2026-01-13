@@ -1,0 +1,26 @@
+deploy:
+  image: gcr.io/bazel-public/bazel:latest
+  commands:
+  - name: build image with bazel and deploy app
+    command: |
+      set -xe
+      bazel run //:push -- --tag "1h" --repository "ttl.sh/okteto-community/build-with-bazel/hello-world-${IMAGE_TAG}"
+      export HELLO_WORLD_IMAGE="ttl.sh/okteto-community/build-with-bazel/hello-world-${IMAGE_TAG}:1h"
+      okteto deploy -f docker-compose.yaml
+      
+
+dev:
+  hello-world:
+    image: okteto/golang:1
+    command: bash
+    sync:
+      - .:/usr/src/app
+    volumes:
+      - /go
+      - /root/.cache
+    securityContext:
+      capabilities:
+        add:
+          - SYS_PTRACE
+    forward:
+      - 2345:2345
