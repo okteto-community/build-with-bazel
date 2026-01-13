@@ -8,7 +8,7 @@ services:
       - 9092
     command: --max_size=1000
     volumes:
-      - /path/to/cache/dir:/data
+      - data:/data
     environment:
       BAZEL_REMOTE_GRPC_PORT: 9092
       # setting data dir and the max_size has no effect here as they are predefined by command line args
@@ -16,3 +16,8 @@ services:
       # see https://stackoverflow.com/q/64341356/13543363
       # BAZEL_REMOTE_DIR: /data
       # BAZEL_REMOTE_MAX_SIZE: 1000
+
+volumes:
+  data:
+    driver_opts:
+      size: 1Gi
