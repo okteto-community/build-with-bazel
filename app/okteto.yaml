@@ -4,10 +4,11 @@ deploy:
   - name: build image with bazel and deploy app
     command: |
       set -xe
-      echo $IMAGE_REPOSITORY
-      echo $IMAGE_TAG
-      # OKTETO env vars are available here if needed https://www.okteto.com/docs/core/okteto-variables/#deployment-environment-variables
-      bazel run //:push -- --repository "${IMAGE_REPOSITORY}" --tag "${IMAGE_TAG}"
+      if [ -n "$REMOTE_CACHE" ]; then
+        bazel run --remote_cache="$REMOTE_CACHE" //:push -- --repository "${IMAGE_REPOSITORY}" --tag "${IMAGE_TAG}"
+      else
+        bazel run //:push -- --repository "${IMAGE_REPOSITORY}" --tag "${IMAGE_TAG}"
+      fi
       export HELLO_WORLD_IMAGE="${IMAGE_REPOSITORY}:${IMAGE_TAG}"
       okteto deploy -f docker-compose.yaml
       

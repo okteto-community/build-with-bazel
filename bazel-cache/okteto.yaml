@@ -1,2 +1,2 @@
 deploy:
- compose: docker-compose.yaml
+ - kubectl apply -f k8s.yaml
